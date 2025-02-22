@@ -1,5 +1,7 @@
 using System;
 using API.Data;
+using API.DTOs;
+using API.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -18,7 +20,7 @@ namespace API.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var stocks = _context.Stocks.ToList();
+            var stocks = _context.Stocks.ToList().Select(s => s.ToStockDto());
             return Ok(stocks);
         }
 
@@ -30,7 +32,20 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            return Ok(stock);
+            return Ok(stock.ToStockDto());
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] CreateStockRequestDto stockDto)
+        {
+            var stockModel = stockDto.ToStockFromCreateDto();
+            _context.Stocks.Add(stockModel);
+            _context.SaveChanges();
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = stockModel.Id },
+                stockModel.ToStockDto()
+            );
         }
     }
 }
