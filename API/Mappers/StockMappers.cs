@@ -1,4 +1,5 @@
 using API.DTOs;
+using API.DTOs.Stock;
 using API.Models;
 
 namespace API.Mappers
